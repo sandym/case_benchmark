@@ -2,69 +2,13 @@
 #define CATCH_CONFIG_ENABLE_BENCHMARKING
 #include <catch.hpp>
 
-#include "tolower_for_each.h"
-#include "tolower_loop_if.h"
-#include "tolower_absl_table.h"
-#include "tolower_8.h"
+#include "using_for_each.h"
+#include "using_loop_if.h"
+#include "using_absl_table.h"
+#include "using_8.h"
 #include <vector>
 #include <random>
 
-inline int StrCaseCmp(std::string_view lhs, std::string_view rhs)
-{
-  auto ulhs = reinterpret_cast<const unsigned char*>(lhs.data());
-  auto urhs = reinterpret_cast<const unsigned char*>(rhs.data());
-	auto len = std::min(lhs.size(), rhs.size());
-	size_t i = 0;
-  for (; i < len; i++) {
-    const int diff =
-        int{static_cast<unsigned char>(absl::ascii_tolower(ulhs[i]))} -
-        int{static_cast<unsigned char>(absl::ascii_tolower(urhs[i]))};
-    if (diff != 0) return diff;
-  }
-  if (i > lhs.size())
-  {
-	if (i > rhs.size())
-		return 0;
-	return int{static_cast<unsigned char>(absl::ascii_tolower(urhs[i]))};
-  }
-  if (i > rhs.size())
-  {
-	return -int{static_cast<unsigned char>(absl::ascii_tolower(ulhs[i]))};
-  }
-  return int{static_cast<unsigned char>(absl::ascii_tolower(ulhs[i]))} -
-        int{static_cast<unsigned char>(absl::ascii_tolower(urhs[i]))};
-}
-
-inline int StrCaseCmpIf(std::string_view lhs, std::string_view rhs)
-{
-  auto ulhs = reinterpret_cast<const unsigned char*>(lhs.data());
-  auto urhs = reinterpret_cast<const unsigned char*>(rhs.data());
-	auto len = std::min(lhs.size(), rhs.size());
-	size_t i = 0;
-
-	auto TOLOWER = [](unsigned  char c ) -> unsigned char
-	{
-		return ( c >= 'A' and c <= 'Z' ) ? c + ' ' : c;
-	};
-  for (; i < len; i++) {
-    const int diff =
-        TOLOWER(ulhs[i]) -
-        TOLOWER(urhs[i]);
-    if (diff != 0) return diff;
-  }
-  if (i > lhs.size())
-  {
-	if (i > rhs.size())
-		return 0;
-	return TOLOWER(urhs[i]);
-  }
-  if (i > rhs.size())
-  {
-	return -TOLOWER(ulhs[i]);
-  }
-  return TOLOWER(ulhs[i]) -
-        TOLOWER(urhs[i]);
-}
 
 TEST_CASE("lowercase") {
 
@@ -168,7 +112,7 @@ TEST_CASE("strcasecmp") {
 		std::sort(l2.begin(), l2.end(),
 		[]( const auto &lhs, const auto &rhs )
 		{
-			return StrCaseCmp( lhs, rhs ) < 0;
+			return StrCaseCmp_absl_table( lhs, rhs ) < 0;
 		});
 	};
 
@@ -182,14 +126,14 @@ TEST_CASE("strcasecmp") {
 	};
 
 	REQUIRE(strcasecmp("AbCd", "aBcD") == 0);
-	REQUIRE(StrCaseCmp("AbCd", "aBcD") == 0);
+	REQUIRE(StrCaseCmp_absl_table("AbCd", "aBcD") == 0);
 
 	REQUIRE(strcasecmp("AbCdE", "aBcD") == 101);
-	REQUIRE(StrCaseCmp("AbCdE", "aBcD") == 101);
+	REQUIRE(StrCaseCmp_absl_table("AbCdE", "aBcD") == 101);
 
 	REQUIRE(strcasecmp("AbCd", "aBcDE") == -101);
-	REQUIRE(StrCaseCmp("AbCd", "aBcDE") == -101);
+	REQUIRE(StrCaseCmp_absl_table("AbCd", "aBcDE") == -101);
 
 	REQUIRE(strcasecmp("AbCdE", "aBcDf") == -1);
-	REQUIRE(StrCaseCmp("AbCdE", "aBcDf") == -1);
+	REQUIRE(StrCaseCmp_absl_table("AbCdE", "aBcDf") == -1);
 }

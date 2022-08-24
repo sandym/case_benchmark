@@ -11,10 +11,10 @@ add_subdirectory(libs/abseil-cpp)
 add_executable(case_benchmark)
 target_sources(case_benchmark PRIVATE
 	main.cpp
-	tolower_for_each.h
-	tolower_loop_if.h
-	tolower_absl_table.h
-	tolower_8.h
+	using_for_each.h
+	using_loop_if.h
+	using_absl_table.h
+	using_8.h
 )
 target_include_directories(case_benchmark PRIVATE SYSTEM
 	${CMAKE_CURRENT_SOURCE_DIR}/libs/catch2/include
